@@ -52,7 +52,7 @@ namespace UE4LogParser
             SaveFileDialog sfd = new SaveFileDialog()
             {
                 Title = "Export your UE4 Log",
-                Filter = "UE4 Log (*.log)|*.log"
+                Filter = "UE4 Log (*.log, *.txt)|*.log;*.txt"
             };
 
             if (sfd.ShowDialog() == DialogResult.OK)
@@ -83,26 +83,34 @@ namespace UE4LogParser
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            // Store the data in a temp string
-            string[] tmp = File.ReadAllLines(opened_log);
-
-            foreach (var item in tmp.Select((value, i) => new { i, value }))
+            using (FileStream fs = File.Open(opened_log, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                foreach (string k in keywords)
+                using (BufferedStream bs = new BufferedStream(fs))
                 {
-                    if (Utils.Contains(item.value, k, StringComparison.OrdinalIgnoreCase))
+                    using (StreamReader sr = new StreamReader(bs))
                     {
-                        logView.Invoke(new Action(() => {
-                            logView.Rows.Add(new string[] {
-                                logView.Rows.Count.ToString(), k, item.i.ToString(), item.value
-                            });
-                        }));
-                        export_log.Add(item.value);
+                        string line;
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            foreach (string keyword in keywords)
+                            {
+                                if (Utils.Contains(line, keyword, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    logView.Invoke(new Action(() =>
+                                    {
+                                        logView.Rows.Add(new string[] {
+                                            logView.Rows.Count.ToString(), keyword, line
+                                        });
+                                    }));
+                                    export_log.Add(line);
+                                }
+                            }
+                        }
                     }
                 }
 
-                int percent = (int)((item.i / (double)tmp.Length) * 100.0) + 1;
-                backgroundWorker1.ReportProgress(percent);
+              //  int percent = (int)(((double)fs.Length) * 100.0) + 1;
+               // backgroundWorker1.ReportProgress(percent);
             }
 
             if (export_log.Count >= 1)

@@ -30,10 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.logView = new System.Windows.Forms.DataGridView();
-            this.num = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.type = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.line = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.message = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
             this.menuFile = new System.Windows.Forms.MenuItem();
             this.menuOpen = new System.Windows.Forms.MenuItem();
@@ -46,6 +42,9 @@
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.num = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.message = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.logView)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -61,7 +60,6 @@
             this.logView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.num,
             this.type,
-            this.line,
             this.message});
             this.logView.Enabled = false;
             this.logView.Location = new System.Drawing.Point(0, 0);
@@ -71,30 +69,6 @@
             this.logView.Size = new System.Drawing.Size(973, 495);
             this.logView.TabIndex = 0;
             this.logView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.logView_CellFormatting);
-            // 
-            // num
-            // 
-            this.num.HeaderText = "Num";
-            this.num.Name = "num";
-            this.num.Width = 54;
-            // 
-            // type
-            // 
-            this.type.HeaderText = "Type";
-            this.type.Name = "type";
-            this.type.Width = 56;
-            // 
-            // line
-            // 
-            this.line.HeaderText = "Line Num";
-            this.line.Name = "line";
-            this.line.Width = 77;
-            // 
-            // message
-            // 
-            this.message.HeaderText = "Message";
-            this.message.Name = "message";
-            this.message.Width = 75;
             // 
             // mainMenu1
             // 
@@ -179,6 +153,24 @@
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             // 
+            // num
+            // 
+            this.num.HeaderText = "Num";
+            this.num.Name = "num";
+            this.num.Width = 54;
+            // 
+            // type
+            // 
+            this.type.HeaderText = "Type";
+            this.type.Name = "type";
+            this.type.Width = 56;
+            // 
+            // message
+            // 
+            this.message.HeaderText = "Message";
+            this.message.Name = "message";
+            this.message.Width = 75;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -211,13 +203,12 @@
         private System.Windows.Forms.MenuItem menuOpen;
         private System.Windows.Forms.MenuItem menuExport;
         private System.Windows.Forms.MenuItem menuItem5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn num;
-        private System.Windows.Forms.DataGridViewTextBoxColumn type;
-        private System.Windows.Forms.DataGridViewTextBoxColumn line;
-        private System.Windows.Forms.DataGridViewTextBoxColumn message;
         private System.Windows.Forms.MenuItem menuExit;
         private System.Windows.Forms.MenuItem menuSettings;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn num;
+        private System.Windows.Forms.DataGridViewTextBoxColumn type;
+        private System.Windows.Forms.DataGridViewTextBoxColumn message;
     }
 }
 
