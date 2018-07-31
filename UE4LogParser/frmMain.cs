@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
 using System.IO;
 
 namespace UE4LogParser
@@ -17,8 +12,6 @@ namespace UE4LogParser
         public frmMain()
         {
             InitializeComponent();
-
-            toolStripStatusLabel.Text = "";
         }
 
         private string[] keywords = { "ERROR", "WARNING", "INFO" };
@@ -83,58 +76,70 @@ namespace UE4LogParser
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            using (FileStream fs = File.Open(opened_log, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            try
             {
-                using (BufferedStream bs = new BufferedStream(fs))
+                using (FileStream fs = File.Open(opened_log, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    using (StreamReader sr = new StreamReader(bs))
+                    using (BufferedStream bs = new BufferedStream(fs))
                     {
-                        string line;
-                        while ((line = sr.ReadLine()) != null)
+                        using (StreamReader sr = new StreamReader(bs))
                         {
-                            foreach (string keyword in keywords)
+                            string line;
+                            while ((line = sr.ReadLine()) != null)
                             {
-                                if (Utils.Contains(line, keyword, StringComparison.OrdinalIgnoreCase))
+                                foreach (string keyword in keywords)
                                 {
-                                    logView.Invoke(new Action(() =>
+                                    if (line.ToUpper().Contains(keyword.ToUpper()))
                                     {
-                                        logView.Rows.Add(new string[] {
-                                            logView.Rows.Count.ToString(), keyword, line
-                                        });
-                                    }));
-                                    export_log.Add(line);
+                                        logView.Invoke(new Action(() =>
+                                        {
+                                            logView.Rows.Add(new string[] {
+                                                logView.Rows.Count.ToString(), keyword, line
+                                            });
+                                        }));
+
+                                        export_log.Add(line);
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
-              //  int percent = (int)(((double)fs.Length) * 100.0) + 1;
-               // backgroundWorker1.ReportProgress(percent);
+                if (export_log.Count >= 1)
+                {
+                    menuExport.Enabled = true;
+                }
             }
-
-            if (export_log.Count >= 1)
+            catch (System.Exception ex)
             {
-                menuExport.Enabled = true;
-                logView.Invoke(new Action(() => { logView.Enabled = true; }));
-            }
-        }
-
-        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            toolStripProgressBar.Value = e.ProgressPercentage;
-            toolStripStatusLabel.Text = $"{e.ProgressPercentage.ToString()}% Loaded";
-
-            if (e.ProgressPercentage == 100)
-            {
-                backgroundWorker1.CancelAsync();
-                toolStripStatusLabel.Text = "Loaded Log";
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void menuAbout_Click(object sender, EventArgs e)
         {
             MessageBox.Show("UE4LogParser \r\nDeveloped by Russ 'trdwll' Treadwell\r\nwww.trdwll.com", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void logView_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        private void logView_DragDrop(object sender, DragEventArgs e)
+        {
+            logView.Rows.Clear();
+            export_log.Clear();
+            opened_log = "";
+
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+
+            if (files.Length >= 1)
+            {
+                opened_log = files[0]; // Such a terrible way to handle this, but it's fine. lol
+                backgroundWorker1.RunWorkerAsync();
+            }
         }
     }
 }
